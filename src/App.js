@@ -98,7 +98,6 @@ class App extends Component {
     const userToken = Cookies.get('jwt_token')
     const empSelected = eTypes.join()
     const url = `https://apis.ccbp.in/jobs?employment_type=${empSelected}&minimum_package=${salary}&search=${searchInput}`
-    console.log(url)
     const responseObj = await fetch(url, {
       headers: {
         Authorization: `Bearer ${userToken}`,
@@ -320,6 +319,25 @@ class App extends Component {
     )
   }
 
+  EmployLists = event => {
+    const {eTypes} = this.state
+    const CheckboxNotInLists = eTypes.filter(each => each === event.target.id)
+    if (CheckboxNotInLists.length === 0) {
+      this.setState(
+        prevState => ({eTypes: [...prevState.eTypes, event.target.id]}),
+        this.getJobs,
+      )
+    } else {
+      const filterData = eTypes.filter(each => each !== event.target.id)
+      this.setState(
+        {
+          eTypes: filterData,
+        },
+        this.getJobs,
+      )
+    }
+  }
+
   Jobs = () => {
     const {
       profileStatus,
@@ -493,6 +511,7 @@ class App extends Component {
         if (w.length === 0) {
           q.push(employmentTypeId)
           filterApply(q)
+          document.getElementById(employmentTypeId).checked = true
         } else {
           filterApply(q.filter(d => d !== employmentTypeId))
         }
@@ -504,7 +523,8 @@ class App extends Component {
             type="checkbox"
             className="filter-box"
             id={employmentTypeId}
-            onClick={itemClicked}
+            value={label}
+            onChange={itemClicked}
           />
           <label htmlFor={employmentTypeId} className="filter-name">
             {label}
@@ -716,7 +736,7 @@ class App extends Component {
                     className="c-logo"
                   />
                   <div className="role">
-                    <p className="r-name">{aboutJob.title}</p>
+                    <h1 className="r-name">{aboutJob.title}</h1>
                     <div className="job-star">
                       <FaStar className="job-logo" />
                       <p className="r-name">{aboutJob.rating}</p>
