@@ -48,6 +48,63 @@ const salaryRangesList = [
   },
 ]
 
+const JobItem = s => {
+  const {jobDetails} = s
+  const jobDetailsObj = {
+    id: jobDetails.id,
+    companyLogo: jobDetails.company_logo_url,
+    employmentType: jobDetails.employment_type,
+    jobDescription: jobDetails.job_description,
+    location: jobDetails.location,
+    rolePackage: jobDetails.package_per_annum,
+    title: jobDetails.title,
+    rating: jobDetails.rating,
+  }
+  const {
+    companyLogo,
+    employmentType,
+    id,
+    jobDescription,
+    location,
+    rolePackage,
+    title,
+    rating,
+  } = jobDetailsObj
+
+  return (
+    <Link to={`/jobs/${id}`} className="go-to-jobItem">
+      <li className="job-item">
+        <div className="company">
+          <img src={companyLogo} alt="company logo" className="c-logo" />
+          <div className="role">
+            <h1 className="r-name">{title}</h1>
+            <div className="job-star">
+              <FaStar className="job-logo" />
+              <p className="r-name">{rating}</p>
+            </div>
+          </div>
+        </div>
+        <div className="location-and-type">
+          <div className="location-type">
+            <div className="each-info">
+              <MdLocationOn className="job-logo" />
+              <p className="about">{location}</p>
+            </div>
+            <div className="each-info">
+              <BsBriefcaseFill className="job-logo" />
+              <p className="about">{employmentType}</p>
+            </div>
+          </div>
+          <p className="package">{rolePackage}</p>
+        </div>
+        <hr className="sep-line" />
+        <h1 className="r-heading">Description</h1>
+        <p className="job-text">{jobDescription}</p>
+      </li>
+    </Link>
+  )
+}
+
 class Jobs extends Component {
   state = {
     searchInput: '',
@@ -140,6 +197,12 @@ class Jobs extends Component {
     }
   }
 
+  onEnter = event => {
+    if (event.key === 'Enter') {
+      this.setState({jobsStatus: 'INITIAL'}, this.getJobs)
+    }
+  }
+
   loader = () => (
     <div className="loader-container" data-testid="loader">
       <Loader type="ThreeDots" color="#ffffff" height="50" width="50" />
@@ -178,62 +241,6 @@ class Jobs extends Component {
     )
   }
 
-  JobItem = s => {
-    const {jobDetails} = s
-    const jobDetailsObj = {
-      id: jobDetails.id,
-      companyLogo: jobDetails.company_logo_url,
-      employmentType: jobDetails.employment_type,
-      jobDescription: jobDetails.job_description,
-      location: jobDetails.location,
-      rolePackage: jobDetails.package_per_annum,
-      title: jobDetails.title,
-      rating: jobDetails.rating,
-    }
-    const {
-      companyLogo,
-      employmentType,
-      id,
-      jobDescription,
-      location,
-      rolePackage,
-      title,
-      rating,
-    } = jobDetailsObj
-    return (
-      <Link to={`/jobs/${id}`} className="go-to-jobItem">
-        <li className="job-item">
-          <div className="company">
-            <img src={companyLogo} alt="company logo" className="c-logo" />
-            <div className="role">
-              <h1 className="r-name">{title}</h1>
-              <div className="job-star">
-                <FaStar className="job-logo" />
-                <p className="r-name">{rating}</p>
-              </div>
-            </div>
-          </div>
-          <div className="location-and-type">
-            <div className="location-type">
-              <div className="each-info">
-                <MdLocationOn className="job-logo" />
-                <p className="about">{location}</p>
-              </div>
-              <div className="each-info">
-                <BsBriefcaseFill className="job-logo" />
-                <p className="about">{employmentType}</p>
-              </div>
-            </div>
-            <p className="package">{rolePackage}</p>
-          </div>
-          <hr className="sep-line" />
-          <h1 className="r-heading">Description</h1>
-          <p className="job-text">{jobDescription}</p>
-        </li>
-      </Link>
-    )
-  }
-
   renderJobs = () => {
     const {jobsList, jobsStatus} = this.state
     switch (jobsStatus) {
@@ -255,7 +262,7 @@ class Jobs extends Component {
             ) : (
               <ul className="jobs-success-container">
                 {jobsList.map(job => (
-                  <this.JobItem key={job.id} jobDetails={job} />
+                  <JobItem key={job.id} jobDetails={job} />
                 ))}
               </ul>
             )}
@@ -359,6 +366,7 @@ class Jobs extends Component {
               onChange={this.onChangeSearch}
               value={searchInput}
               placeholder="Search"
+              onKeyDown={this.onEnter}
             />
             {/* eslint-disable-next-line */}
             <button
@@ -402,6 +410,7 @@ class Jobs extends Component {
                 onChange={this.onChangeSearch}
                 value={searchInput}
                 placeholder="Search"
+                onKeyDown={this.onEnter}
               />
               {/* eslint-disable-next-line */}
               <button
